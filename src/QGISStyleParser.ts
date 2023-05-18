@@ -809,7 +809,13 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SimpleLine'
       },
-      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+      // QGIS Styles are from 228 nested inside a parent Option tag
+      Option: {
+        $: {
+          type: 'Map'
+        },
+        Option: this.propsObjectToQmlSymbolProps(qmlProps)
+      } 
     };
   }
 
@@ -942,8 +948,8 @@ export class QGISStyleParser implements StyleParser {
       const v = properties[k];
       return {
         $: {
-          name: k,
-          value: v
+          value: v,
+          name: k
         }
       };
     }).filter(s => s.$.value !== undefined);
@@ -962,7 +968,9 @@ export class QGISStyleParser implements StyleParser {
     if (rules.length > 0 || symbols.length > 0) {
       return {
         qgis: {
-          $: {},
+          $: {
+            styleCategories: 'Symbology'
+          },
           'renderer-v2': [{
             $: {
               type
@@ -974,7 +982,6 @@ export class QGISStyleParser implements StyleParser {
               rule: rules
             }],
             symbols: [{
-              foo: 'bar',
               symbol: symbols
             }]
           }]
